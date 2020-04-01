@@ -1,0 +1,101 @@
+Problem:
+Given a sorted array arr[] and a value X, find the k closest elements to X in arr[]. You may assume none of the elements are repeated.
+
+Example:
+
+Input: K = 4, X = 35
+       arr[] = {12, 16, 22, 30, 35, 39, 42, 45, 48, 50, 53, 55, 56}
+
+Output: 30 39 42 45
+
+
+Solution:
+The Plan:
+-Find X in the list (this will be the cross over point).
+-Compare elements on both sides of the crossover point to print the k closest elements.
+
+Breaking it down: 
+When a solution requires a lot of code, most of the time the interviewer is really just wanting to hear how you would plan a larger program as opposed to actually watching you write a long program on the whiteboard. A verbal explanation of the code for findCrossOver would be,
+
+-Use recursion to find the crossover point. The base cases are X being equal to the largest number in the array or X being equal to the smallest number in the array so the method would automatically return that element. 
+-If it’s not the base case then we would need to find the middle index and check if that is equal to X.
+-If the middle index is equal to X then we return that, if X is greater than the middle index we would return findCrossOver with mid + 1 index, and return findCrossover with mid - 1 index otherwise. 
+
+A verbal explanation of the code for printKclosest would be,
+
+-Use the findCrossOver method to get the index of X and set that equal to a variable L (for left).
+-Set R (for right) equal to L + 1.
+-If X is equal to the mid index then minus 1 from L because we shouldn’t print out X.
+-Keep a counter variable set to 0 so we know when to stop printing out elements.
+-Compare indexes L and R to print out the one closest to X, add 1 to count, and increment/decrement L and R each time their side is printed.
+
+Code:
+
+The findCrossOver method will use recursion to find X in the array
+int findCrossOver(int arr[], int low, int high, int x) 
+    { 
+        // Base cases 
+        if (arr[high] <= x) // x is greater than all 
+            return high; 
+        if (arr[low] > x)  // x is smaller than all 
+            return low; 
+  
+        // Find the middle point 
+        int mid = (low + high)/2;  /* low + (high - low)/2 */
+  
+        /* If x is same as middle element, then return mid */
+        if (arr[mid] <= x && arr[mid+1] > x) 
+            return mid; 
+  
+        /* If x is greater than arr[mid], then either arr[mid + 1] 
+          is ceiling of x or ceiling lies in arr[mid+1...high] */
+        if(arr[mid] < x) 
+            return findCrossOver(arr, mid+1, high, x); 
+  
+        return findCrossOver(arr, low, mid - 1, x); 
+} 
+
+
+void printKclosest(int arr[], int x, int k, int n) 
+    { 
+        // Find the crossover point 
+        int l = findCrossOver(arr, 0, n-1, x);  
+        int r = l+1;   // Right index to search 
+        int count = 0; // To keep track of count of elements 
+                       // already printed 
+  
+        // If x is present in arr[], then reduce left index 
+        // Assumption: all elements in arr[] are distinct 
+        if (arr[l] == x) l--; 
+  
+        // Compare elements on left and right of crossover 
+        // point to find the k closest elements 
+        while (l >= 0 && r < n && count < k) 
+        { 
+            if (x - arr[l] < arr[r] - x) 
+                System.out.print(arr[l--]+" "); 
+            else
+                System.out.print(arr[r++]+" "); 
+            count++; 
+        } 
+  
+        // If there are no more elements on right side, then 
+        // print left elements 
+        while (count < k && l >= 0) 
+        { 
+            System.out.print(arr[l--]+" "); 
+            count++; 
+        } 
+  
+  
+        // If there are no more elements on left side, then 
+        // print right elements 
+        while (count < k && r < n) 
+        { 
+            System.out.print(arr[r++]+" "); 
+            count++; 
+        } 
+    } 
+
+
+
